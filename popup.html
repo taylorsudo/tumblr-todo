@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 300px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .task.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .input-group {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    #newTask {
+      flex: 1;
+      margin-right: 5px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      display: flex;
+      align-items: center;
+      padding: 5px 0;
+    }
+    .task-text {
+      flex: 1;
+      margin-right: 10px;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="input-group">
+    <input type="text" id="newTask" placeholder="New task">
+    <button id="addTask">Add</button>
+  </div>
+  <ul id="taskList"></ul>
+  <script src="popup.js"></script>
+</body>
+</html>
