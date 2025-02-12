@@ -3,7 +3,7 @@ function replaceTrendingWithTodo() {
     const trendingSection = document.querySelector('div[aria-label="Trending"]');
     if (trendingSection && !document.getElementById('todo-content')) {
       trendingSection.innerHTML = `
-        <div style="padding: 12px;">
+        <div style="padding: 12px; font-family: Arial, sans-serif;">
           <h2 style="font-size: 1.25rem; margin-bottom: 12px;">Your Todo List</h2>
           <div id="todo-content"></div>
         </div>
@@ -59,18 +59,20 @@ function showTodoPopup() {
     popup.style.left = '50%';
     popup.style.transform = 'translate(-50%, -50%)';
     popup.style.background = 'black';
-    popup.style.padding = '20px';
-    popup.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.3)';
+    popup.style.padding = '20px 40px';
+    popup.style.boxShadow = '0px 0px 15px rgba(255, 255, 255, 0.2)';
     popup.style.zIndex = '9999';
-    popup.style.borderRadius = '10px';
+    popup.style.borderRadius = '20px';
     popup.style.textAlign = 'center';
+    popup.style.width = '35%';
+    popup.style.fontFamily = 'Arial, sans-serif';
 
     popup.innerHTML = `
-      <h2 style="margin-bottom: 10px;">Your Todo List</h2>
-      <div style="max-height: 200px; overflow-y: auto; text-align: left; padding: 10px; border: 1px solid #ccc;">
+      <h2 style="margin-bottom: 10px;">You have work pending dawg</h2>
+      <div style="max-height: 200px; overflow-y: auto; text-align: left; padding: 10px;">
         ${taskList}
       </div>
-      <button id="continue-btn" style="margin-top: 10px; padding: 5px 10px; background: #1DA1F2; color: white; border: none; cursor: pointer; border-radius: 5px;">Continue</button>
+      <button id="continue-btn" style="margin-top: 10px; padding: 5px 10px; background: #1DA1F2; color: white; border: none; cursor: pointer; border-radius: 20px;">Continue</button>
     `;
 
     // Append overlay and popup to the body
