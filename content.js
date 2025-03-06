@@ -1,9 +1,9 @@
 function replaceTrendingWithTodo() {
   const observer = new MutationObserver((mutations) => {
-    const trendingSection = document.querySelector('div[aria-label="Trending"]');
+    const trendingSection = document.querySelector('.Qihwb');
     if (trendingSection && !document.getElementById('todo-content')) {
       trendingSection.innerHTML = `
-        <div style="padding: 12px; font-family: Arial, sans-serif;">
+        <div style="color: var(--chrome-fg); padding: 12px; font-family: var(--font-family);">
           <h2 style="font-size: 1.25rem; margin-bottom: 12px;">Your Todo List</h2>
           <div id="todo-content"></div>
         </div>
@@ -60,7 +60,7 @@ function showTodoPopup() {
     popup.style.transform = 'translate(-50%, -50%)';
     popup.style.background = 'black';
     popup.style.padding = '20px 40px';
-    popup.style.boxShadow = '0px 0px 15px rgba(255, 255, 255, 0.2)';
+    popup.style.boxShadow = '0px 0px 15px var(--chrome-ui)';
     popup.style.zIndex = '9999';
     popup.style.borderRadius = '20px';
     popup.style.textAlign = 'center';
@@ -68,11 +68,13 @@ function showTodoPopup() {
     popup.style.fontFamily = 'Arial, sans-serif';
 
     popup.innerHTML = `
-      <h2 style="margin-bottom: 10px;">You have work pending dawg</h2>
-      <div style="max-height: 200px; overflow-y: auto; text-align: left; padding: 10px;">
-        ${taskList}
+      <div style="color: var(--chrome-fg); font-family: var(--font-family);">
+          <h2 style="margin-bottom: 10px;">You have work pending dawg</h2>
+          <div style="max-height: 200px; overflow-y: auto; text-align: left; padding: 10px;">
+          ${taskList}
+          </div>
+          <button id="continue-btn" style="margin-top: 10px; padding: 8px 16px; background: var(--chrome-ui); color: var(--chrome-ui-fg); border: none; cursor: pointer; border-radius: 40px;">Continue</button>
       </div>
-      <button id="continue-btn" style="margin-top: 10px; padding: 5px 10px; background: #1DA1F2; color: white; border: none; cursor: pointer; border-radius: 20px;">Continue</button>
     `;
 
     // Append overlay and popup to the body
@@ -91,7 +93,7 @@ function showTodoPopup() {
   });
 }
 
-// Show the popup when user first visits x.com
+// Show the popup when user first visits tumblr.com
 if (!sessionStorage.getItem('todoPopupShown')) {
   showTodoPopup();
   sessionStorage.setItem('todoPopupShown', 'true');

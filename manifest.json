@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "X Todo List",
+  "name": "Tumblr Todo List",
   "version": "1.0",
   "permissions": ["storage", "activeTab", "scripting"],
   "action": {
@@ -13,8 +13,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://twitter.com/*", "https://x.com/*"],
-      "js": ["content.js"]
+      "matches": ["*://*.tumblr.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ],
   "icons": {
