@@ -16,7 +16,7 @@ this is a chrome extension that replaces the ~~trending section on x.com~~ **Tum
 
 ## usage
 - click the extension icon to add tasks
-- when you open ~~x.com~~ **tumblr.com**, your todo list will be shown in place of trending
+- when you open ~~x.com~~ **tumblr.com**, your todo list will be shown in place of ~~trending~~ **the Tumblr Premium ad on the sidebar**
 - a popup will remind you of pending tasks when you open ~~x.com~~ **tumblr.com** and every 15 minutes
 
 ## contributing
