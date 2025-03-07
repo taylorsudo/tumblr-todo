@@ -81,20 +81,15 @@ function showTodoPopup() {
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
 
-    // Add click event listener to overlay to close popup
-    overlay.addEventListener('click', () => {
-      popup.remove();
-      overlay.remove();
-    });
+    // Disable background interactions
+    // document.body.style.pointerEvents = 'none';
 
     // Event listener for "Continue" button
-    const continueBtn = document.getElementById('continue-btn');
-    if (continueBtn) {
-      continueBtn.addEventListener('click', () => {
-        popup.remove();
-        overlay.remove();
-      });
-    }
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      popup.remove();
+      overlay.remove();
+      // document.body.style.pointerEvents = 'auto'; // Restore interactions
+    });
   });
 }
 
