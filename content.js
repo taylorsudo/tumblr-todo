@@ -1,34 +1,108 @@
 function replaceTrendingWithTodo() {
-  const observer = new MutationObserver((mutations) => {
+  const observer = new MutationObserver(() => {
     const trendingSection = document.querySelector('.Qihwb');
-    if (trendingSection && !document.getElementById('todo-content')) {
+    if (trendingSection && !document.getElementById('todo-container')) {
       trendingSection.innerHTML = `
-        <div style="color: var(--chrome-fg); padding: 12px; font-family: var(--font-family);">
-          <h2 style="font-size: 1.25rem; margin-bottom: 12px;">Your Todo List</h2>
+        <div id="todo-container" style="width: 100%; color: var(--chrome-fg); padding: 12px; font-family: var(--font-family);">
+          <h2 style="font-size: 1.25rem; margin-bottom: 12px;">To-Do List</h2>
           <div id="todo-content"></div>
+          <div style="display: flex; gap: 6px; margin-top: 12px;">
+            <input id="new-task-input" type="text" placeholder="Add a new task..." 
+              style="flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px;">
+            <button id="add-task-btn" 
+              style="padding: 6px 10px; background: var(--chrome-ui); color: var(--chrome-ui-fg); font-weight: 700; border: none; cursor: pointer; border-radius: 4px;">
+              Add
+            </button>
+          </div>
         </div>
       `;
       loadAndDisplayTasks();
+      setupTaskInput();
     }
   });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+  observer.observe(document.body, { childList: true, subtree: true });
 }
 
 function loadAndDisplayTasks() {
   chrome.storage.local.get(['tasks'], (result) => {
     const tasks = result.tasks || [];
     const container = document.getElementById('todo-content');
-    container.innerHTML = tasks.length > 0 
-      ? tasks.map(task => `
-          <div style="padding: 4px 0; ${task.completed ? 'text-decoration: line-through; color: #666' : ''}">
-            ${task.text}
+    if (!container) return;
+
+    container.innerHTML = tasks.length > 0
+      ? tasks.map((task, index) => `
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
+            <span class="task-item" data-index="${index}" style="cursor: pointer; flex-grow: 1; ${task.completed ? 'text-decoration: line-through; color: #666' : ''}">
+              ${task.text}
+            </span>
+            <button class="delete-task-btn" data-index="${index}" 
+              style="font-size: 1.5em; color: var(--chrome-fg); border: none; cursor: pointer; border-radius: 4px; padding: 2px 6px;">
+              ×
+            </button>
           </div>
         `).join('')
-      : '<div style="color: #666">No tasks yet - add some using the extension icon!</div>';
+      : '<div style="color: #666">No tasks yet - add some using the input below!</div>';
+
+    setupTaskActions();
+  });
+}
+
+function setupTaskInput() {
+  const input = document.getElementById('new-task-input');
+  const button = document.getElementById('add-task-btn');
+
+  button.addEventListener('click', () => {
+    const newTaskText = input.value.trim();
+    if (newTaskText === '') return;
+
+    chrome.storage.local.get(['tasks'], (result) => {
+      const tasks = result.tasks || [];
+      tasks.push({ text: newTaskText, completed: false });
+
+      chrome.storage.local.set({ tasks }, () => {
+        input.value = ''; // Clear input field after adding task
+        loadAndDisplayTasks(); // Refresh the list
+      });
+    });
+  });
+
+  input.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter') {
+      button.click(); // Trigger button click when pressing Enter
+    }
+  });
+}
+
+function setupTaskActions() {
+  document.querySelectorAll('.task-item').forEach(task => {
+    task.addEventListener('click', (event) => {
+      const index = parseInt(event.target.dataset.index, 10);
+
+      chrome.storage.local.get(['tasks'], (result) => {
+        let tasks = result.tasks || [];
+        tasks[index].completed = !tasks[index].completed; // Toggle completion status
+
+        chrome.storage.local.set({ tasks }, () => {
+          loadAndDisplayTasks(); // Refresh the list after toggling
+        });
+      });
+    });
+  });
+
+  document.querySelectorAll('.delete-task-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      const index = parseInt(event.target.dataset.index, 10);
+      
+      chrome.storage.local.get(['tasks'], (result) => {
+        let tasks = result.tasks || [];
+        tasks.splice(index, 1); // Remove task at the specified index
+
+        chrome.storage.local.set({ tasks }, () => {
+          loadAndDisplayTasks(); // Refresh the list after deletion
+        });
+      });
+    });
   });
 }
 
@@ -102,7 +176,7 @@ if (!sessionStorage.getItem('todoPopupShown')) {
 // Show the popup every 15 minutes
 setInterval(showTodoPopup, 15 * 60 * 1000);
 
-// Listen for storage changes
+// Listen for storage changes and update the UI
 chrome.storage.onChanged.addListener(loadAndDisplayTasks);
 
 // Start the replacement process
