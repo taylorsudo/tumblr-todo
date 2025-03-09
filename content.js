@@ -116,7 +116,7 @@ function replaceTrendingWithTodo() {
     const trendingSection = document.querySelector('.Qihwb');
     if (trendingSection && !document.getElementById('todo-container')) {
       trendingSection.innerHTML = `
-        <div id="todo-container" style="position: fixed; width: 280px; color: var(--chrome-fg); background-color: RGB(var(--navy)); padding: 12px; font-family: var(--font-family); z-index: 999">
+        <div id="todo-container" style="position: fixed; width: 280px; color: var(--chrome-fg); background-color: RGB(var(--navy)); padding: 12px; font-family: var(--font-family); z-index: 99">
           <h2 style="font-size: 1.25rem; margin-bottom: 12px;">To-Do List</h2>
           <div id="todo-content"></div>
           <div style="display: flex; gap: 6px; margin-top: 12px;">
