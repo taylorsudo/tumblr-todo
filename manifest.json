@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Tumblr Todo List",
+  "name": "Tumblr Todo",
   "version": "1.0",
   "permissions": ["storage", "activeTab", "scripting"],
   "action": {

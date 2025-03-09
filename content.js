@@ -1,3 +1,116 @@
+function replaceCarouselTitle() {
+  const observer = new MutationObserver(() => {
+    const carouselTitle = document.querySelector('.HphhS');
+    if (carouselTitle && !document.getElementById('carousel-title')) {
+      // Get the current UTC time
+      const now = new Date();
+
+      const estTimeString = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(now);
+
+      const cetTimeString = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Europe/Paris",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(now);
+
+      const aestTimeString = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Australia/Sydney",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      }).format(now);
+
+      carouselTitle.innerHTML = `
+        <div id="carousel-title" style="color: var(--chrome-fg);">
+          ${estTimeString} EST • ${cetTimeString} CET • ${aestTimeString} AEST
+        </div>
+      `;
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function replaceCarouselContent() {
+  const observer = new MutationObserver(() => {
+    const carouselSection = document.querySelector('.q1ZAL');
+    if (carouselSection && !document.getElementById('carousel-container')) {
+      carouselSection.innerHTML = `
+        <div style="position: relative; width: 100%;">
+          <button id="scroll-left" class="TRX6J" aria-label="Scroll carousel left" 
+            style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 10;">
+            <svg height="40" role="presentation" width="40" xmlns="http://www.w3.org/2000/svg" 
+              style="transform: rotate(90deg); transform-origin: center center;">
+              <use href="#managed-icon__caret-thin"></use>
+            </svg>
+          </button>
+
+          <section id="carousel-container" 
+            style="margin: 0 auto; overflow-x: auto; overflow-y: hidden; white-space: nowrap; display: flex; gap: 20px; scroll-behavior: smooth;">
+            <div style="flex-shrink: 0; width: 540px;">
+              <iframe width="540" height="200" src="https://spells.neocities.org/moons/"></iframe>
+            </div>
+            <div style="flex-shrink: 0; width: 540px;">
+              <iframe width="540" height="200" src="https://spells.neocities.org/astrology/"></iframe>
+            </div>
+            <div style="flex-shrink: 0; width: 540px;">
+              <iframe width="540" height="200" src="https://spells.neocities.org/sabbats/"></iframe>
+            </div>
+          </section>
+
+          <button id="scroll-right" class="TRX6J" aria-label="Scroll carousel right" 
+            style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 10;">
+            <svg height="40" role="presentation" width="40" xmlns="http://www.w3.org/2000/svg" 
+              style="transform: rotate(270deg); transform-origin: center center;">
+              <use href="#managed-icon__caret-thin"></use>
+            </svg>
+          </button>
+        </div>
+      `;
+
+      setupCarouselScroll();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function setupCarouselScroll() {
+  const container = document.getElementById("carousel-container");
+  const scrollLeftBtn = document.getElementById("scroll-left");
+  const scrollRightBtn = document.getElementById("scroll-right");
+
+  function smoothScroll(amount) {
+    container.scrollBy({ left: amount, behavior: "smooth" });
+  }
+
+  function updateButtons() {
+    scrollLeftBtn.style.display = container.scrollLeft > 0 ? "block" : "none";
+    scrollRightBtn.style.display = 
+      container.scrollLeft + container.clientWidth < container.scrollWidth ? "block" : "none";
+  }
+
+  scrollLeftBtn.addEventListener("click", () => {
+    smoothScroll(-560);
+    setTimeout(updateButtons, 500);
+  });
+
+  scrollRightBtn.addEventListener("click", () => {
+    smoothScroll(560);
+    setTimeout(updateButtons, 500);
+  });
+
+  container.addEventListener("scroll", updateButtons);
+  updateButtons(); // Initial check
+}
+
+
 function replaceTrendingWithTodo() {
   const observer = new MutationObserver(() => {
     const trendingSection = document.querySelector('.Qihwb');
@@ -106,78 +219,10 @@ function setupTaskActions() {
   });
 }
 
-// Function to create the popup modal with overlay
-function showTodoPopup() {
-  chrome.storage.local.get(['tasks'], (result) => {
-    const tasks = result.tasks || [];
-    const taskList = tasks.length > 0 
-      ? tasks.map(task => `<div style="padding: 4px 0; ${task.completed ? 'text-decoration: line-through; color: #666' : ''}">${task.text}</div>`).join('')
-      : '<div style="color: #666">Congrats! No work pending.</div>';
-    
-    // Create overlay to disable background interactions
-    const overlay = document.createElement('div');
-    overlay.id = 'todo-overlay';
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.background = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent background
-    overlay.style.zIndex = '9998';
-
-    // Create popup modal
-    const popup = document.createElement('div');
-    popup.id = 'todo-popup';
-    popup.style.position = 'fixed';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.background = 'black';
-    popup.style.padding = '20px 40px';
-    popup.style.boxShadow = '0px 0px 15px var(--chrome-ui)';
-    popup.style.zIndex = '9999';
-    popup.style.borderRadius = '20px';
-    popup.style.textAlign = 'center';
-    popup.style.width = '35%';
-    popup.style.fontFamily = 'Arial, sans-serif';
-
-    popup.innerHTML = `
-      <div style="color: var(--chrome-fg); font-family: var(--font-family);">
-          <h2 style="margin-bottom: 10px;">You have work pending dawg</h2>
-          <div style="max-height: 200px; overflow-y: auto; text-align: left; padding: 10px;">
-          ${taskList}
-          </div>
-          <button id="continue-btn" style="margin-top: 10px; padding: 8px 16px; background: var(--chrome-ui); color: var(--chrome-ui-fg); border: none; cursor: pointer; border-radius: 40px;">Continue</button>
-      </div>
-    `;
-
-    // Append overlay and popup to the body
-    document.body.appendChild(overlay);
-    document.body.appendChild(popup);
-
-    // Disable background interactions
-    // document.body.style.pointerEvents = 'none';
-
-    // Event listener for "Continue" button
-    document.getElementById('continue-btn').addEventListener('click', () => {
-      popup.remove();
-      overlay.remove();
-      // document.body.style.pointerEvents = 'auto'; // Restore interactions
-    });
-  });
-}
-
-// Show the popup when user first visits tumblr.com
-if (!sessionStorage.getItem('todoPopupShown')) {
-  showTodoPopup();
-  sessionStorage.setItem('todoPopupShown', 'true');
-}
-
-// Show the popup every 15 minutes
-setInterval(showTodoPopup, 15 * 60 * 1000);
-
 // Listen for storage changes and update the UI
 chrome.storage.onChanged.addListener(loadAndDisplayTasks);
 
 // Start the replacement process
 replaceTrendingWithTodo();
+replaceCarouselTitle();
+replaceCarouselContent();
