@@ -1,7 +1,7 @@
 function replaceCarouselTitle() {
   const observer = new MutationObserver(() => {
-    const carouselTitle = document.querySelector('.HphhS');
-    if (carouselTitle && !document.getElementById('carousel-title')) {
+    const carouselTitle = document.querySelector(".HphhS");
+    if (carouselTitle && !document.getElementById("carousel-title")) {
       // Get the current UTC time
       const now = new Date();
 
@@ -9,21 +9,21 @@ function replaceCarouselTitle() {
         timeZone: "America/New_York",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false
+        hour12: false,
       }).format(now);
 
       const cetTimeString = new Intl.DateTimeFormat("en-US", {
         timeZone: "Europe/Paris",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false
+        hour12: false,
       }).format(now);
 
       const aestTimeString = new Intl.DateTimeFormat("en-US", {
         timeZone: "Australia/Sydney",
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false
+        hour12: false,
       }).format(now);
 
       carouselTitle.innerHTML = `
@@ -39,8 +39,8 @@ function replaceCarouselTitle() {
 
 function replaceCarouselContent() {
   const observer = new MutationObserver(() => {
-    const carouselSection = document.querySelector('.q1ZAL');
-    if (carouselSection && !document.getElementById('carousel-container')) {
+    const carouselSection = document.querySelector(".q1ZAL");
+    if (carouselSection && !document.getElementById("carousel-container")) {
       carouselSection.innerHTML = `
         <div style="position: relative; width: 100%;">
           <button id="scroll-left" class="TRX6J" aria-label="Scroll carousel left" 
@@ -92,8 +92,10 @@ function setupCarouselScroll() {
 
   function updateButtons() {
     scrollLeftBtn.style.display = container.scrollLeft > 0 ? "block" : "none";
-    scrollRightBtn.style.display = 
-      container.scrollLeft + container.clientWidth < container.scrollWidth ? "block" : "none";
+    scrollRightBtn.style.display =
+      container.scrollLeft + container.clientWidth < container.scrollWidth
+        ? "block"
+        : "none";
   }
 
   scrollLeftBtn.addEventListener("click", () => {
@@ -110,11 +112,10 @@ function setupCarouselScroll() {
   updateButtons(); // Initial check
 }
 
-
 function replaceTrendingWithTodo() {
   const observer = new MutationObserver(() => {
-    const trendingSection = document.querySelector('.Qihwb');
-    if (trendingSection && !document.getElementById('todo-container')) {
+    const trendingSection = document.querySelector(".Qihwb");
+    if (trendingSection && !document.getElementById("todo-container")) {
       trendingSection.innerHTML = `
         <div id="todo-container" style="position: fixed; width: 280px; color: var(--chrome-fg); background-color: RGB(var(--navy)); padding: 12px; font-family: var(--font-family); z-index: 99">
           <h2 style="font-size: 1.25rem; margin-bottom: 12px;">To-Do List</h2>
@@ -138,61 +139,70 @@ function replaceTrendingWithTodo() {
 }
 
 function loadAndDisplayTasks() {
-  chrome.storage.local.get(['tasks'], (result) => {
+  chrome.storage.local.get(["tasks"], (result) => {
     const tasks = result.tasks || [];
-    const container = document.getElementById('todo-content');
+    const container = document.getElementById("todo-content");
     if (!container) return;
 
-    container.innerHTML = tasks.length > 0
-      ? tasks.map((task, index) => `
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0;">
-            <span class="task-item" data-index="${index}" style="cursor: pointer; flex-grow: 1; ${task.completed ? 'text-decoration: line-through; color: #666' : ''}">
-              ${task.text}
-            </span>
-            <button class="delete-task-btn" data-index="${index}" 
-              style="font-size: 1.5em; color: var(--chrome-fg); border: none; cursor: pointer; border-radius: 4px; padding: 2px 6px;">
-              ×
-            </button>
-          </div>
-        `).join('')
-      : '<div style="color: #666">No tasks yet - add some using the input below!</div>';
-
+    container.innerHTML =
+      tasks.length > 0
+        ? tasks
+            .map(
+              (task, index) => `
+        <div class="task-row" draggable="true" data-index="${index}"
+          style="display: flex; align-items: center; justify-content: space-between; padding: 4px 0; cursor: grab;">
+          <span class="task-item" data-index="${index}" style="flex-grow: 1; ${
+                task.completed
+                  ? "text-decoration: line-through; color: #666"
+                  : ""
+              }">
+            ${task.text}
+          </span>
+          <button class="delete-task-btn" data-index="${index}" 
+            style="font-size: 1.5em; color: var(--chrome-fg); border: none; cursor: pointer; border-radius: 4px; padding: 2px 6px;">
+            ×
+          </button>
+        </div>
+      `
+            )
+            .join("")
+        : '<div style="color: #666">No tasks yet - add some using the input below!</div>';
     setupTaskActions();
   });
 }
 
 function setupTaskInput() {
-  const input = document.getElementById('new-task-input');
-  const button = document.getElementById('add-task-btn');
+  const input = document.getElementById("new-task-input");
+  const button = document.getElementById("add-task-btn");
 
-  button.addEventListener('click', () => {
+  button.addEventListener("click", () => {
     const newTaskText = input.value.trim();
-    if (newTaskText === '') return;
+    if (newTaskText === "") return;
 
-    chrome.storage.local.get(['tasks'], (result) => {
+    chrome.storage.local.get(["tasks"], (result) => {
       const tasks = result.tasks || [];
       tasks.push({ text: newTaskText, completed: false });
 
       chrome.storage.local.set({ tasks }, () => {
-        input.value = ''; // Clear input field after adding task
+        input.value = ""; // Clear input field after adding task
         loadAndDisplayTasks(); // Refresh the list
       });
     });
   });
 
-  input.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
+  input.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
       button.click(); // Trigger button click when pressing Enter
     }
   });
 }
 
 function setupTaskActions() {
-  document.querySelectorAll('.task-item').forEach(task => {
-    task.addEventListener('click', (event) => {
+  document.querySelectorAll(".task-item").forEach((task) => {
+    task.addEventListener("click", (event) => {
       const index = parseInt(event.target.dataset.index, 10);
 
-      chrome.storage.local.get(['tasks'], (result) => {
+      chrome.storage.local.get(["tasks"], (result) => {
         let tasks = result.tasks || [];
         tasks[index].completed = !tasks[index].completed; // Toggle completion status
 
@@ -203,16 +213,51 @@ function setupTaskActions() {
     });
   });
 
-  document.querySelectorAll('.delete-task-btn').forEach(button => {
-    button.addEventListener('click', (event) => {
+  document.querySelectorAll(".delete-task-btn").forEach((button) => {
+    button.addEventListener("click", (event) => {
       const index = parseInt(event.target.dataset.index, 10);
-      
-      chrome.storage.local.get(['tasks'], (result) => {
+
+      chrome.storage.local.get(["tasks"], (result) => {
         let tasks = result.tasks || [];
         tasks.splice(index, 1); // Remove task at the specified index
 
         chrome.storage.local.set({ tasks }, () => {
           loadAndDisplayTasks(); // Refresh the list after deletion
+        });
+      });
+    });
+  });
+
+  let draggedIndex = null;
+
+  document.querySelectorAll(".task-row").forEach((row) => {
+    const index = parseInt(row.dataset.index, 10);
+
+    row.addEventListener("dragstart", () => {
+      draggedIndex = index;
+    });
+
+    row.addEventListener("dragover", (e) => {
+      e.preventDefault(); // Allow drop
+      row.style.backgroundColor = "#eee"; // Optional: highlight drop area
+    });
+
+    row.addEventListener("dragleave", () => {
+      row.style.backgroundColor = ""; // Reset highlight
+    });
+
+    row.addEventListener("drop", () => {
+      row.style.backgroundColor = "";
+
+      if (draggedIndex === null || draggedIndex === index) return;
+
+      chrome.storage.local.get(["tasks"], (result) => {
+        const tasks = result.tasks || [];
+        const [movedTask] = tasks.splice(draggedIndex, 1);
+        tasks.splice(index, 0, movedTask);
+
+        chrome.storage.local.set({ tasks }, () => {
+          loadAndDisplayTasks(); // Re-render with new order
         });
       });
     });
